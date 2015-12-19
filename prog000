@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ $# != 1 ]; then
+  echo Usage: ./prog000 179 \(shows progress in range 179000-179999 in batches of 100\)
+  exit
+fi
+
+PRE=$1
+for n in `seq 0 9`; do
+ echo "${PRE}${n}00-${PRE}${n}99: " `./nfc ${PRE}${n}00 ${PRE}${n}99 | grep missing`; 
+done

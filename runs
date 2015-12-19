@@ -1,0 +1,1 @@
+echo `for f in  xrun.out.*; do tail -1 $f | awk '{print $6;}'; done` | fold -s -w 7 | sort -n  | pr --column 10 -ta

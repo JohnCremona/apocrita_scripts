@@ -1,0 +1,32 @@
+#!/bin/bash
+
+rsync -a timeouts atkin:g0n/
+rsync -a XL*_levels atkin:g0n/
+#rsync -a XL*_levels lehner:g0n/
+
+nfin=$(ls finished.* 2> /dev/null | wc -l)
+if [ "$nfin" != "0" ]; then
+echo Processing $nfin finshed levels...
+
+for f in finished.*; do
+
+ read N JOBID TASKNO < ${f}
+
+ if [ x${N} !=  x ]; then
+  echo Processing ${f}: sending newforms/x${N} to atkin...
+  rsync -a newforms/x${N} atkin:g0n/newforms
+#  NNFN=`./nnf $N`
+#   if [ $NNFN -gt 0 ]; then
+#    rsync -avz out/curves.${N} atkin:g0n/data
+#   fi
+  echo removing file ${f}
+  rm -f finished.${N}
+ fi
+done;
+
+#rsync -av ./newforms/x36???? atkin:g0n/newforms/
+
+
+else echo "no finished levels since last checked"
+fi
+

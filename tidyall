@@ -1,0 +1,40 @@
+#!/bin/bash
+
+echo `ls -1 running.* | wc -l` jobs are apparently running at `date`:
+echo
+
+for f in running.*; do
+
+#echo File ${f} contains `cat ${f}`
+
+read N JOBID TASKNO < ${f}
+#echo JOBID=${JOBID}
+#echo TASKNO=${TASKNO}
+#LOGFILE=xrun.out.${JOBID}.${TASKNO}
+LOGFILE=XLrun.out.${JOBID}.${TASKNO}
+#qstat | grep mpx017
+nr=`qstat | grep mpx017 | awk --assign J=${JOBID} --assign T=${TASKNO} '($1==J)&&($10==T)'  | wc -l`
+#echo nr = ${nr}
+if [ ${nr} -eq '0' ]; then
+  echo job ${JOBID}.${TASKNO} not running
+  echo checking log file ${LOGFILE}
+  if [ -e  ${LOGFILE} ]; then
+   #cat  ${LOGFILE}
+   if [ '1' == `wc -l ${LOGFILE} | cut -d ' ' -f 1` ]; then
+     echo Level $N seems to have timed out...
+     #echo $N >> timeouts
+   else
+       echo "OK, normal timeout"
+   fi;
+  else
+      echo "No log file!"
+  fi;
+  echo moving ${f} to not-${f}
+  mv ${f} not-${f}
+else
+  echo Job ${JOBID}.${TASKNO} running level $N OK
+fi;
+#echo ----------------
+done
+echo `date`
+echo

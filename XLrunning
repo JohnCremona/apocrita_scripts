@@ -1,0 +1,1 @@
+tail -n 1 XLrun.out.* | grep XL_level | awk '{print $5;}' | fold -s -w 7 | sort  | pr --column 10 -ta

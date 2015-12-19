@@ -1,0 +1,30 @@
+#!/bin/bash
+
+rsync -a XL*_levels fermat:g0n/
+
+nfin=$(ls finished.* 2> /dev/null | wc -l)
+if [ "$nfin" != "0" ]; then
+echo Processing $nfin finshed levels...
+
+for f in finished.*; do
+
+ read N JOBID TASKNO < ${f}
+
+ if [ x${N} !=  x ]; then
+  echo Processing ${f}: sending newforms/x${N} to fermat...
+  rsync -a newforms/x${N} fermat:g0n/newforms
+#  NNFN=`./nnf $N`
+#   if [ $NNFN -gt 0 ]; then
+#    rsync -avz out/curves.${N} fermat:g0n/data
+#   fi
+  echo removing file ${f}
+  rm -f finished.${N}
+ fi
+done;
+
+#rsync -av ./newforms/x36???? fermat:g0n/newforms/
+
+
+else echo "no finished levels since last checked"
+fi
+

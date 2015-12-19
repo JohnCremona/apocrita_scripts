@@ -1,0 +1,39 @@
+#!/bin/bash
+
+FIRSTN=$1
+LASTN=$2
+
+OK=0
+MISSING=0
+NNF=0
+
+for N in `seq $FIRSTN $LASTN`; do
+
+#echo checking N=$N
+
+if [ -e newforms/x$N ]; then
+#  echo newforms/x$N exists
+  OK=`expr $OK + 1`
+  NNFN=`./nnf $N`
+
+#  if [ $NNFN -gt 0 ]; then
+    #echo $NNFN newforms at level $N
+    # if [ ! -e data/curves.$N ]; then
+    #   echo data/curves.$N does not exist, running h1clist...
+    #   echo "$N $N" | h1clist > data/curves.$N
+    #   echo done
+    # fi
+#  fi
+
+  NNF=`expr $NNF + $NNFN` 
+
+else
+  echo newforms/x$N does not exist
+  MISSING=`expr $MISSING + 1`
+fi
+
+done;
+
+echo $NNF newforms in range $FIRSTN..$LASTN
+echo $MISSING levels missing in range $FIRSTN..$LASTN
+

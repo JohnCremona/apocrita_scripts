@@ -1,0 +1,12 @@
+#!/bin/bash
+
+for f in xrun.out.*; do
+
+g=${f#xrun\.out\.}
+#echo $g
+J=${g%\.*}
+T=${g#*\.}
+#qstat | grep mpx017 | awk --assign J=${J} --assign T=${T} '($1==J)&&($10==T)' | wc -l
+if [ `qstat | grep mpx017 | awk --assign J=${J} --assign T=${T} '($1==J)&&($10==T)' | wc -l` == 0 ]; then mv ${f} xrun.done/xrun.done.${g}; echo xrun.done.$g;  fi
+
+done

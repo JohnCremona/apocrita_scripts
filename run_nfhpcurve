@@ -1,0 +1,72 @@
+#!/bin/bash
+ulimit -c 0
+
+JOBID=$1
+ARRAYINDEX=$2
+cd $HOME/g0n
+
+#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/lib
+export BINDIR=$HOME/bin
+export PROG=nfhpcurve
+export ECLIB_EXT_NUM_THREADS=1
+
+# Read values of FIRSTN, LASTN, NAP from files for the same name:
+read FIRSTN < FIRSTN
+read LASTN < LASTN
+read NAP < NAP
+
+if [ "x"$NF_DIR == "x" ]; then 
+    export NF_DIR="newforms"
+fi
+
+echo "Running $PROG from $FIRSTN to $LASTN (JOBID=$JOBID, index=$ARRAYINDEX) with NF_DIR=$NF_DIR"
+
+
+N=$FIRSTN
+while [ "$N" -le "$LASTN" ]
+do
+  if [ -e "$NF_DIR/x$N" ]; then
+     echo "file $NF_DIR/x$N exists already, skipping" >> /dev/null
+  else
+  if [ -e "running.$N" ]; then
+     echo "Level $N running already, skipping" >> /dev/null
+  else
+     if [ ! `grep -l $N timeouts` ] ; then
+     if [ ! `grep -l $N XL*levels` ] ; then
+     echo "running $PROG on level $N at " `date`
+     T1=`date +%s`
+     prefix=${N:0:3}
+     echo $N $JOBID $ARRAYINDEX >> running.$N
+     echo "0 $NAP 1 $N 0" |  $BINDIR/$PROG > out/${PROG}.out_$N
+     echo "finished $PROG on level $N at " `date`
+     T2=`date +%s`
+     let 'T = T2 - T1'
+     echo "Elapsed time for level $N : $T seconds" >> times
+     if [ -e "$NF_DIR/x$N" ]; then
+#        NNF=`./nnf $N`
+#        if [ $NNF -gt 0 ]; then
+#           echo "$N $N" | $BINDIR/h1clist > out/curves.$N 2>/dev/null 
+#        fi;
+       mv running.$N finished.$N
+      let 'TR = 259200 - T'     # time remaining out of 72h=259200s
+      if [ $TR -lt 18000 ]; then # less than 5h left, so stop after this:
+        N=`expr $LASTN + 1`
+      fi;
+     else
+       echo "funny: no newforms/x$N file"
+       echo $N >> XL${prefix}_levels
+       mv running.$N XL.$N
+       mv out/${PROG}.out_$N out/${PROG}.out_$N.XL
+     fi;  
+     else
+       echo "not running level $N since it appears in the XL list" >> /dev/null
+     fi;
+     else
+       echo "not running level $N since it appears in the timeouts list" >> /dev/null
+     fi;
+  fi;
+  fi;
+  N=`expr $N + 1`;
+done;
+
+echo "Finished running $PROG from $FIRSTN to $LASTN"

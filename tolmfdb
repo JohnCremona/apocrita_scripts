@@ -1,0 +1,17 @@
+#!/bin/bash
+
+for f in finished.*; do
+
+ read N JOBID TASKNO < ${f}
+
+ if [ x${N} !=  x ]; then
+  echo Processing ${f}: sending newforms/x${N} to lmfdb...
+  rsync -avz newforms/x${N} lmfdb:g0n/newforms
+#  NNFN=`./nnf $N`
+#   if [ $NNFN -gt 0 ]; then
+#    rsync -avz out/curves.${N} fermat:curves/g0n_working/data
+#   fi
+  echo removing file ${f}
+  rm -f finished.${N}
+ fi
+done
