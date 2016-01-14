@@ -22,7 +22,7 @@ if [ ${nr} -eq '0' ]; then
    #cat  ${LOGFILE}
    if [ '1' == `wc -l ${LOGFILE} | cut -d ' ' -f 1` ]; then
      echo Level $N seems to have timed out...
-     #echo $N >> timeouts
+     echo $N >> timeouts
    else
        echo "OK, normal timeout"
    fi;

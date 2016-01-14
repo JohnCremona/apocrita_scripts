@@ -1,0 +1,5 @@
+#tail -n 1 xrun.out.* | grep running | awk '{print $5;}' | fold -s -w 7 | sort  | pr --column 10 -ta
+echo `ls running.??????` | sed "s/running.//g" | fold -s -w 7 | sort  | pr --column 10 -ta
+function nr () { qstat | grep mpx017 | grep -c " r " ; }
+function nq () { qstat | grep " qw " | awk 'BEGIN{s=0;}{a=gensub("-.*$","","g",$9); b=gensub(":.*$","","g",gensub("^.*-","","g",$9)); s+=(1+b-a);}END{print s}' ; }
+echo `nr` running, `nq` queued

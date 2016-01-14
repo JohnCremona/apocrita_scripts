@@ -32,7 +32,7 @@ do
      echo "Level $N running already, skipping" >> /dev/null
   else
      if [ ! `grep -l $N timeouts` ] ; then
-     if [ ! `grep -l $N XL*levels` ] ; then
+     if [ ! `grep -l $N XL*_levels` ] ; then
      echo "running $PROG on level $N at " `date`
      T1=`date +%s`
      prefix=${N:0:3}
