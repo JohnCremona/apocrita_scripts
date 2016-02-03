@@ -1,0 +1,15 @@
+#!/bin/bash
+#$ -l h_vmem=16G    # Request 16GB RAM
+#$ -cwd -V
+#$ -t 1-100
+
+echo JOB_ID=${JOB_ID}
+echo SGE_TASK_ID=${SGE_TASK_ID}
+# make sure the jobs do not start simultaneously and clash:
+# the 0 is because sometimes PBS_ARRAY_ID is not set!
+sleep 0${SGE_TASK_ID}
+# a random number in the range 0..19:
+R=$RANDOM; let "R %= 20"
+sleep 0${R}
+
+./run_nfhpcurve ${JOB_ID} ${SGE_TASK_ID} > XLrun.out.${JOB_ID}.${SGE_TASK_ID}
